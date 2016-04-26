@@ -1,0 +1,46 @@
+// Variable declaration.
+s64 undefined0, undefined1;
+
+// Explicitly typed variable definition.
+s64 explicitly_typed0 = 10, explicitly_typed1, explicitly_typed2 = -5;
+
+// Implicitly typed variable definition.
+implicitly_typed0 := 10, implicitly_typed1 := 10;
+
+// Implicitly typed constant definition.
+constant0 ::= 0, constant1 ::= 1;
+
+// Explicitly typed constant definition.
+s32 constant2 ::= 2, constant3 ::= 3;
+
+// Function pointer variable declaration.
+((s64, s8@@) => ()) function_pointer;
+
+// Function definition.
+((s64 argc, s8@@ argv) => (s64)) main = {
+
+	// Single var for loop.
+	for(i := 0; true; i += 1){
+		return "Hello, World!", "Hello, Tom.";
+	}
+
+	// Multi var for loop.
+	for(u8 u = 255, v = 65535; false; u *= v){
+	}
+	return a,b,c,d,e;
+
+	// Interval foreach loops.
+	foreach([0..255] =: i){
+		foreach([-10..1000) =: j){
+			foreach((-10..1000] =: k){
+				print("i: " + i + " j: " + j + " k: " + k + "\n");
+			}	
+		}
+	}
+	return argc;
+
+	// Collection foreach loop.
+	foreach(collection =: item){
+		print(item * 3.1416e-9 + "\n");
+	}
+};
