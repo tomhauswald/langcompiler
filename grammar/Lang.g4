@@ -3,8 +3,8 @@ grammar Lang;
 // *** Parser rules start here. *** //
 
 program
-: definition*
-;
+	: definition*
+	;
 
 // Definitions.
 definition
@@ -15,7 +15,7 @@ definition
     // Variable declaration.
     | variableDeclaration
     #DGlobalVariable
-;
+	;
 
 // Statements.
 statement
@@ -214,35 +214,11 @@ primitive
     | 'bool'
     #PBool
 
-    | 's8'
-    #PSigned8
+    | ('s8' | 's16' | 's32' | 's64' | 'u8' | 'u16' | 'u32' | 'u64')
+    #PInt
 
-    | 's16'
-    #PSigned16
-
-    | 's32'
-    #PSigned32
-
-    | 's64'
-    #PSigned64
-
-    | 'u8'
-    #PUnsigned8
-
-    | 'u16'
-    #PUnsigned16
-
-    | 'u32'
-    #PUnsigned32
-
-    | 'u64'
-    #PUnsigned64
-
-    | 'f32'
-    #PFloat32
-
-    | 'f64'
-    #PFloat64
+    | ('f32' | 'f64')
+    #PFloat
     ;
 
 // *** Lexer rules start here. *** //
