@@ -4,27 +4,27 @@ grammar Lang;
 
 program
 	: definition*
-	;
+    ;
 
 // Definitions.
 definition
     // Function definition.
     : functionDefinition
-    #DGlobalFunction
+    #DFunction
 
     // Variable declaration.
     | variableDeclaration
-    #DGlobalVariable
-	;
+    #DVariable
+    ;
 
 // Statements.
 statement
     // RValue statement.
-    : rvalue ';'
+    : rvalue ';' 
     #SRValue
 
     // Block statement.
-    | '{' statement* '}'
+    | '{' statement* '}' 
     #SBlock
 
     // Variable declaration statement.
@@ -32,7 +32,7 @@ statement
     #SVarDecl
 
     // Return statement.
-    | 'return' ' ' returnValues ';'
+    | 'return' returnValues ';'
     #SReturn
 
     // If statement.
@@ -56,7 +56,7 @@ statement
     #SCollectionLoop
 
     // Interval for loop statement.
-    | 'for' '(' open=('(' | '[') min=SINT '..' max=SINT close=(')' | ']') '=:' var=IDENT ')' body=statement
+    | 'for' '(' open=('('|'[') min=SINT '..' max=SINT close=(')'|']') '=:' var=IDENT ')' body=statement
     #SIntervalLoop
     ;
 
@@ -83,16 +83,25 @@ returnTypes
 // Variable declarations.
 variableDeclaration
     // Explicitly typed.
-    : type=datatype name=IDENT ('=' value=rvalue)? (',' name=IDENT ('=' value=rvalue)?)* ';'
-    #VDExplicit
+    : datatype explTypeVarDecl ';'
 
     // Implicitly typed.
-    | name=IDENT ':=' value=rvalue (',' name=IDENT ':=' value=rvalue)* ';'
-    #VDImplicit
+    | implTypeVarDecl ';'
 
     // Constant.
-    | type=datatype? name=IDENT '::=' value=rvalue (',' name=IDENT '::=' value=rvalue)* ';'
-    #VDConstant
+    | datatype? constVarDecl ';'
+    ;
+
+explTypeVarDecl
+    : name=IDENT ('=' value=rvalue)? (| ',' next=explTypeVarDecl)
+    ;
+
+implTypeVarDecl
+    : name=IDENT ':=' value=rvalue (| ',' next=implTypeVarDecl)
+    ;
+
+constVarDecl
+    : name=IDENT '::=' value=rvalue (| ',' next=constVarDecl)
     ;
 
 // Datatypes.
@@ -127,7 +136,7 @@ lvalue
     #LAssignment
 
     // Multiplication assignment.
-    | lhs=lvalue operator=('*=' | '/=') rhs=rvalue
+    | lhs=lvalue operator=('*='|'/=') rhs=rvalue
     #LMulAssignment
 
     // Modulation assignment.
@@ -135,7 +144,7 @@ lvalue
     #LModAssignment
 
     // Addition assignment.
-    | lhs=lvalue operator=('+=' | '-=') rhs=rvalue
+    | lhs=lvalue operator=('+='|'-=') rhs=rvalue
     #LAddAssignment
 
     // Variable name.
@@ -166,7 +175,7 @@ rvalue
     #RFunctionCall
 
     // Multiplication / division result.
-    | lhs=rvalue operator=('*' | '/') rhs=rvalue
+    | lhs=rvalue operator=('*'|'/') rhs=rvalue
     #RMulResult
 
     // Modulo result.
@@ -174,7 +183,7 @@ rvalue
     #RModResult
 
     // Addition / subtraction result.
-    | lhs=rvalue operator=('+' | '-') rhs=rvalue
+    | lhs=rvalue operator=('+'|'-') rhs=rvalue
     #RAddResult
     ;
 
@@ -202,7 +211,7 @@ constant
     #CUndefined
 
     // True / false.
-    | ('true' | 'false')
+    | ('true'|'false')
     #CBool
     ;
 
@@ -214,18 +223,18 @@ primitive
     | 'bool'
     #PBool
 
-    | ('s8' | 's16' | 's32' | 's64' | 'u8' | 'u16' | 'u32' | 'u64')
+    | ('s8'|'s16'|'s32'|'s64'|'u8'|'u16'|'u32'|'u64')
     #PInt
 
-    | ('f32' | 'f64')
+    | ('f32'|'f64')
     #PFloat
     ;
 
 // *** Lexer rules start here. *** //
 
 IDENT
-    : '_'+ DIGIT ('_' | CHAR | DIGIT)*
-    | '_'* CHAR  ('_' | CHAR | DIGIT)*
+    : '_'+ DIGIT ('_'|CHAR|DIGIT)*
+    | '_'* CHAR  ('_'|CHAR|DIGIT)*
     ;
 
 STRING
@@ -233,7 +242,7 @@ STRING
     ;
 
 REAL
-    : '-'? DIGIT+ '.' DIGIT+ ([eE] ('+' | '-')? UINT)?
+    : '-'? DIGIT+ '.' DIGIT+ ([eE] ('+'|'-')? UINT)?
     ;
 
 SINT
