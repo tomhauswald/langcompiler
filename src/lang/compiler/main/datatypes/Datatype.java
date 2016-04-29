@@ -6,6 +6,7 @@ package lang.compiler.main.datatypes;
 public class Datatype {
     private DatatypeFormat format;
     private String name;
+    private int size;
 
     public Datatype(DatatypeFormat format, String name) {
         this.format = format;
@@ -18,5 +19,13 @@ public class Datatype {
 
     public String getName() {
         return name;
+    }
+
+    public int getSize(){
+        return size;
+    }
+
+    public void setSize(int sz){
+        size = sz;
     }
 }

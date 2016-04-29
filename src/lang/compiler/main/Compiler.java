@@ -2,6 +2,7 @@ package lang.compiler.main;
 
 import lang.compiler.main.datatypes.*;
 import lang.compiler.main.functions.Function;
+import lang.compiler.main.functions.FunctionArgument;
 import lang.compiler.main.variables.Variable;
 import lang.compiler.parser.LangLexer;
 import lang.compiler.parser.LangParser;
@@ -11,6 +12,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.MultiMap;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 import static lang.compiler.visitor.LangMasterVisitor.*;
@@ -134,6 +136,12 @@ public class Compiler {
         functions.put(name, function);
     }
 
+    public static <E, F> void printMapKeys(Map<E, F> map){
+        for(Object key : map.keySet()){
+            System.out.println(key.toString());
+        }
+    }
+
     public static void main(String[] args){
         try {
             LangLexer lexer = new LangLexer(new ANTLRFileStream("test/testfile.lang"));
@@ -150,6 +158,8 @@ public class Compiler {
             Compiler.addDatatype("u16",  new PrimitiveDatatype("u16"));
             Compiler.addDatatype("u32",  new PrimitiveDatatype("u32"));
             Compiler.addDatatype("u64",  new PrimitiveDatatype("u64"));
+            Compiler.addDatatype("f32",  new PrimitiveDatatype("f32"));
+            Compiler.addDatatype("f64",  new PrimitiveDatatype("f64"));
 
             LangMasterVisitor visitor = new LangMasterVisitor();
             visitor.visitProgram(parser.program());
@@ -158,6 +168,21 @@ public class Compiler {
                 System.err.println("There were errors. Compilation failed.");
             } else {
                 System.out.println("Compilation successful!");
+                System.out.println();
+
+                // Print datatypes.
+                System.out.println("Datatypes: " + datatypes.size());
+                printMapKeys(datatypes);
+                System.out.println();
+
+                // Print variables.
+                System.out.println("Variables: " + variables.size());
+                printMapKeys(variables);
+                System.out.println();
+
+                // Print functions.
+                System.out.println("Functions: " + functions.size());
+                printMapKeys(functions);
             }
         } catch (Exception e) {
             e.printStackTrace();

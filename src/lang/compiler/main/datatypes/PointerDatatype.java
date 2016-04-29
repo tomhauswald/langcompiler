@@ -23,4 +23,9 @@ public class PointerDatatype extends Datatype {
     public int getIndirections() {
         return indirections;
     }
+
+    @Override
+    public int getSize() {
+        return 8;
+    }
 }

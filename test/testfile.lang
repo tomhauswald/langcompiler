@@ -1,20 +1,17 @@
-// Variable declaration.
-s64 a, b;
+s64  a, b;
+s64  c = 10, d, e = -5;
+s8@  h ::= "Hello, World!";
+bool bconst ::= false;
+u16  k ::= 2, n ::= 3;
 
-// Explicitly typed variable definition.
-s64 a = 10, b, c = -5;
+((s64, s8@, f32, bool@@) => (s64@)) fn;
+((f32, f32, f32) => (f32)) lerp;
 
-// Implicitly typed variable definition.
-a := 10, b := 3.1416;
+((s64 argc, s8@@ argv) => (s64)) hello = {
+    print("Hello, World!");
+    print("Goodbye, World!");
+};
 
-// Implicitly typed constant definition.
-a ::= 0, b ::= "true", c ::= false;
-
-// Explicitly typed constant definition.
-s32 a ::= 2, b ::= 3;
-
-// Function pointer variable declaration.
-((s64, s8@@) => (s64)) fn;
-
-// Function definition.
-((s64, s8@@) => (s8, u16, s32, u64)) main;
+type string = {
+    s64 length;
+};

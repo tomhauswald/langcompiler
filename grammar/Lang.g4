@@ -10,11 +10,12 @@ program
 definition
     // Function definition.
     : functionDefinition
-    #DFunction
 
     // Variable declaration.
-    | variableDeclaration
-    #DVariable
+    | varDeclList
+
+    // Type definition.
+    | typeDefinition
     ;
 
 // Statements.
@@ -28,7 +29,7 @@ statement
     #SBlock
 
     // Variable declaration statement.
-    | variableDeclaration
+    | varDeclList
     #SVarDecl
 
     // Return statement.
@@ -40,7 +41,7 @@ statement
     #SIfElse
 
     // For loop statement.
-    | 'for' '(' decl=variableDeclaration condition=rvalue ';' update=rvalue ')' body=statement
+    | 'for' '(' varDeclList condition=rvalue ';' update=rvalue ')' body=statement
     #SForLoop
 
     // While loop statement.
@@ -62,56 +63,63 @@ statement
 
 // Return values comma-separated.
 returnValues
-    : value=rvalue (| ',' next=returnValues)
+    : vals+=rvalue (',' vals+=rvalue)
     ;
 
 // Function definition.
 functionDefinition
-    : '(' '(' args=arguments? ')' '=>' '(' ret=returnTypes? ')' ')' name=IDENT '=' '{' body=statement* '}' ';'
+    : '(' '(' arguments? ')' '=>' '(' returnTypes? ')' ')' name=IDENT '=' '{' statement* '}' ';'
     ;
 
 // Function arguments comma-separated.
 arguments
-    : type=datatype name=IDENT (| ',' next=arguments)
+    : types+=datatype names+=IDENT (',' types+=datatype names+=IDENT)*
     ;
 
 // Return types comma-separated.
 returnTypes
-    : type=datatype (| ',' next=returnTypes)
+    : types+=datatype (',' types+=datatype)*
     ;
 
 // Variable declarations.
-variableDeclaration
+varDeclList
     // Explicitly typed.
-    : datatype explTypeVarDecl ';'
+    : datatype decls+=explTypeVarDecl (',' decls+=explTypeVarDecl)* ';'
+    #VDLExplicitType
 
-    // Implicitly typed.
-    | implTypeVarDecl ';'
+    /* Implicitly typed.
+    | implTypeVarDecl (',' implTypeVarDecl)* ';'
+    #VDImplType */
 
     // Constant.
-    | datatype? constVarDecl ';'
+    | datatype decls+=constVarDecl (',' decls+=constVarDecl)* ';'
+    #VDLConstant
     ;
 
 explTypeVarDecl
-    : name=IDENT ('=' value=rvalue)? (| ',' next=explTypeVarDecl)
+    : name=IDENT ('=' rvalue)?
     ;
 
-implTypeVarDecl
-    : name=IDENT ':=' value=rvalue (| ',' next=implTypeVarDecl)
-    ;
+    /* implTypeVarDecl
+    : name=IDENT ':=' rvalue
+    ; */
 
 constVarDecl
-    : name=IDENT '::=' value=rvalue (| ',' next=constVarDecl)
+    : name=IDENT '::=' rvalue
+    ;
+
+typeDefinition
+    : 'type' name=IDENT '=' '{' varDeclList* '}' ';'
     ;
 
 // Datatypes.
 datatype
     // Pointer.
-    : basetype=datatype indir='@'+
+    : datatype indir='@'+
     #DTPointer
 
     // Function.
-    | '(' '(' args=anonArguments? ')' '=>' '(' ret=returnTypes? ')' ')'
+    | '(' '(' (argtypes+=datatype (',' argtypes+=datatype)*)? ')' '=>' '(' returnTypes? ')' ')'
     #DTFunction
 
     // Primitive.
@@ -121,12 +129,6 @@ datatype
     // User-defined.
     | IDENT
     #DTUserDefined
-    ;
-
-// Anonymous argument list comma-separated.
-// Used for function type variable declarations.
-anonArguments
-    : type=datatype (| ',' next=anonArguments)
     ;
 
 // LValues.
@@ -171,7 +173,7 @@ rvalue
     #RParentheses
 
     // Function call.
-    | rvalue '(' args=callArguments? ')'
+    | rvalue '(' callArguments? ')'
     #RFunctionCall
 
     // Multiplication / division result.
@@ -189,7 +191,7 @@ rvalue
 
 // Function call arguments comma-separated.
 callArguments
-    : argval=rvalue (| ',' next=callArguments )
+    : rvalue (| ',' next=callArguments )
     ;
 
 // Constants.
